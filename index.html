@@ -37,7 +37,8 @@
       const website = document.getElementById('website').value;
       const homePhone = document.getElementById('homePhone').value;
       const officePhone = document.getElementById('officePhone').value;
-
+      const homePhoneFormatted = homePhone.startsWith('+') ? homePhone : `+${homePhone}`;
+      const officePhoneFormatted = officePhone.startsWith('+') ? officePhone : `+${officePhone}`;
       const contactInfo = `BEGIN:VCARD
 VERSION:3.0
 FN:${name}
