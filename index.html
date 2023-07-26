@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-IN">
+<html>
 <head>
   <title>Contact QR Code Generator</title>
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
@@ -26,6 +26,7 @@
     <button type="button" onclick="generateQRCode()">Generate QR Code</button>
   </form>
   <div id="qrcode"></div>
+  <button id="downloadButton" style="display: none;">Download QR Code</button>
 
   <script>
     function generateQRCode() {
@@ -37,8 +38,10 @@
       const website = document.getElementById('website').value;
       const homePhone = document.getElementById('homePhone').value;
       const officePhone = document.getElementById('officePhone').value;
+
       const homePhoneFormatted = homePhone.startsWith('+') ? homePhone : `+${homePhone}`;
       const officePhoneFormatted = officePhone.startsWith('+') ? officePhone : `+${officePhone}`;
+
       const contactInfo = `BEGIN:VCARD
 VERSION:3.0
 FN:${name}
@@ -47,8 +50,8 @@ EMAIL:${email}
 X-LINKEDIN:${linkedin}
 ADR:${address}
 URL:${website}
-TEL;TYPE=HOME:${homePhone}
-TEL;TYPE=WORK:${officePhone}
+TEL;TYPE=HOME:${homePhoneFormatted}
+TEL;TYPE=WORK:${officePhoneFormatted}
 END:VCARD`;
 
       const qrcodeDiv = document.getElementById('qrcode');
@@ -59,6 +62,35 @@ END:VCARD`;
         width: 256,
         height: 256,
       });
+
+      const downloadButton = document.getElementById('downloadButton');
+      downloadButton.style.display = 'block';
+
+      downloadButton.onclick = function() {
+        const qrCodeCanvas = qrcodeDiv.querySelector('canvas');
+        const imageURI = qrCodeCanvas.toDataURL('image/png');
+
+        const blob = dataURItoBlob(imageURI);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `${name}_qr_code.png`;
+
+        link.click();
+
+        URL.revokeObjectURL(link.href);
+      };
+    }
+
+    function dataURItoBlob(dataURI) {
+      const byteString = atob(dataURI.split(',')[1]);
+      const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+      const ab = new ArrayBuffer(byteString.length);
+      const ia = new Uint8Array(ab);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ab], { type: mimeString });
     }
   </script>
 </body>
